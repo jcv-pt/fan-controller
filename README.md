@@ -27,7 +27,7 @@ Installation is done on the 2 components, hardware and software, please check ac
 
 The following diagram illustrates GPIO connection on the Raspberry PI per device type. A custom plug was made so it made connection easier as opposed to individually plug wire by wire;
 
-![fan-controller-diag](docs\images\fan-controller-diag.png)
+![fan-controller-diag](docs/images/fan-controller-diag.png)
 
 ### Software:
 
@@ -222,7 +222,7 @@ python fan-controller/engine/simulate.py
 
 This should provide the UI with a similar graph:
 
-![fan-controller-sim](docs\images\fan-controller-sim.png)
+![fan-controller-sim](docs/images/fan-controller-sim.png)
 
 Depending on the configuration set up, we can observe "start" and "shutdown" conditions and "RPM vs Temperature curve of operation";
 
