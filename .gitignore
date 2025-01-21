@@ -1,0 +1,4 @@
+data/
+!data/config/sample.default.ini
+!data/logs/.empty
+raspberry-pi-fan-controller/
