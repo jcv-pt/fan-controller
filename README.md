@@ -6,6 +6,8 @@ Fan speed is customizable via a Bezier curve in order to effectively control "fa
 
 In addition, it also provides monitoring for a number of metrics such as "fan RPM", "temperature" while providing audible alerts in case of fan hardware failures;
 
+![fan-controller-diag](docs/images/fan-controller-cmd.png)
+
 ## Requirements
 
 - <u>Hardware</u>
@@ -47,16 +49,70 @@ The following diagram illustrates GPIO connection on the Raspberry PI per device
        ```
        dtoverlay=w1-gpio,gpiopin=17
        ```
+       
+    3. Comment all `dtoverlay` entries found besides the ones we added:
 
-- #### Install packages:
+       ```
+       #dtoverlay=<xxx>
+       ```
 
-  - Current release was run on Python 3.11.2 version. 
+  - Enable modprobe
 
-    Use the package manager [pip](https://pip.pypa.io/en/stable/) to install "Fan Controller" required libs.
+    1. Run the following commands to enable:
 
-    ```bash
-    pip install -r requirements.txt
+       ```
+       sudo modprobe w1-gpio
+       sudo modprobe w1-therm
+       ```
+
+    2. Check the sensors dir for the temp:
+
+       ```
+       cd /sys/bus/w1/devices/28-<unique_ref>
+       nano w1_slave
+       ```
+
+       We should see data under temp;
+
+- #### Install package and env:
+
+  - Enter as root:
+
     ```
+    sudo -i
+    cd /usr/local/bin/
+    ```
+  
+  - Clone repo:
+  
+    ```
+    git clone https://github.com/jcv-pt/raspberry-pi-fan-controller.git
+    cd raspberry-pi-fan-controller
+    ```
+  
+  - Create a new venv:
+  
+    ```
+    python -m venv ./fan-controller-venv
+    source ./fan-controller-venv/bin/activate
+    ```
+  
+  - Current release was run on Python 3.11.2 version. 
+  
+    Use the package manager [pip](https://pip.pypa.io/en/stable/) to install "Fan Controller" required libs depending on the Raspberry-pi model:
+  
+    - For Raspberry-pi version 3:
+  
+      ```
+      pip install -r requirements-pi3.txt
+      ```
+  
+    - For Raspberry-pi version 5:
+  
+      ```
+      pip install -r requirements-pi5.txt
+      ```
+  
 
 
 - #### Initialize and setup configurations:
@@ -128,10 +184,10 @@ The following diagram illustrates GPIO connection on the Raspberry PI per device
       - <u>Default</u>: `0`
     - `[PWM][Channel]`
       - <u>Desc</u>: *PWM Channel (check HardwarePWM lib for futher details)*;
-      - <u>Default</u>: `2`
+      - <u>Default</u>: usually `2` for RaspberryPi v5, `0` for RaspberryPi v3
     - `[PWM][ChipNo]`
       - <u>Desc</u>: *Chip No (check HardwarePWM lib for further details)*;
-      - <u>Default</u>: `2`
+      - <u>Default</u>: usually `2` for RaspberryPi v5, `0` for RaspberryPi v3
     - `[PWM][Frequency]`
       - <u>Desc</u>: *PWM Frequency operation of the fan*;
       - <u>Default</u>: `25000`
@@ -145,6 +201,41 @@ The following diagram illustrates GPIO connection on the Raspberry PI per device
 - #### Install as a service:
 
   - In order to install "Fan Controller" as a debian service, please follow steps bellow:
+  
+    1. Create a service file, e.g., `/etc/systemd/system/raspberry-fan-controller.service`:
+  
+       ```
+       [Unit]
+       Description=Raspberry Fan Controller
+       After=syslog.target network.target
+       
+       [Service]
+       WorkingDirectory=/usr/local/bin/raspberry-pi-fan-controller
+       ExecStart=/usr/local/bin/raspberry-pi-fan-controller/fan-controller-venv/bin/python /usr/local/bin/raspberry-pi-fan-controller/fan-controller
+       Restart=always
+       
+       [Install]
+       WantedBy=multi-user.target
+       ```
+  
+    2. Reload service list:
+  
+       ```
+       systemctl daemon-reload
+       ```
+  
+    3. Enable and start the service:
+  
+       ```
+       sudo systemctl enable raspberry-fan-controller.service
+       sudo systemctl start raspberry-fan-controller.service
+       ```
+  
+    4. Monitor output with:
+  
+       ```
+       journalctl -S today -u raspberry-fan-controller.service
+       ```
 
 ## Usage
 
@@ -200,6 +291,16 @@ In order to diagnose faults, please inspect the logs under `<root>/data/logs`/
 ### Crash Mode
 
 "Fan Controller" will enter crash mode whenever there is an OS or software issue that causes Engine to crash. Engine will set RPM to max value;
+
+## Testing Devices
+
+A number of tests are available to troubleshoot device operation, namely:
+
+| Test             | How to run?                        | Description                                |
+| ---------------- | ---------------------------------- | ------------------------------------------ |
+| test-pwm         | `python tests/test-pwm.py`         | Will set PWM to both max and min rotation; |
+| test-temp-sensor | `python tests/test-temp-sensor.py` | Will output current temp reading;          |
+| test-buzzer      | `python tests/test-buzzer.py`      | Will enable buzzer intermittently;         |
 
 ## Simulate
 

@@ -18,7 +18,7 @@ class App:
         # Initialize app args
         argParser = argparse.ArgumentParser(description='Raspberry PI : Fan Controller - Controls & manages PWM fans')
         argParser.add_argument('--verbose', dest='verbose', type=int, default=1, help='Weather to display logging output')
-        argParser.add_argument('--debug', dest='debug', type=int, default=0,help='Weather to print debug data to console')
+        argParser.add_argument('--debug', dest='debug', type=int, default=0, help='Weather to print debug data to console')
 
         args = argParser.parse_args()
 

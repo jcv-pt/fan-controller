@@ -54,6 +54,7 @@ class Tachometer:
         try:
             while self.__isRunning:
                 self.__measurePulses()
+                time.sleep(5)
         except Exception as e:
             self.__logger.error('Tachometer', message='Error while reading FAN pulses: {0}'.format(repr(e)))
 

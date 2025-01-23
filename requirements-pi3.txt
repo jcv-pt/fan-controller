@@ -1,0 +1,5 @@
+###### Requirements without Version Specifiers ######
+configparser
+rpi-hardware-pwm
+rpi-lgpio
+###### Requirements with Version Specifiers ######

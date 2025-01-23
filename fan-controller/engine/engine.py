@@ -71,18 +71,14 @@ class Engine:
 
     def __run(self):
         while self.__running:
-            curTime = int(time())
+            try:
+                self.__iterate()
+            except Exception as ex:
+                self.__logger.error('Engine',message='CRASH, entering crash mode, engine iteration reported a failure: {0}'.format(repr(ex)))
+                self.__logger.error('Engine',message='- Stack: {0}'.format(traceback.format_exc()))
+                self.__crash()
 
-            # Process iteration every 5 secs
-            if curTime % 5 == 0:
-                try:
-                    self.__iterate()
-                except Exception as ex:
-                    self.__logger.error('Engine',message='CRASH, entering crash mode, engine iteration reported a failure: {0}'.format(repr(ex)))
-                    self.__logger.error('Engine',message='- Stack: {0}'.format(traceback.format_exc()))
-                    self.__crash()
-
-            sleep(1)
+            sleep(5)
 
     def __iterate(self):
         sensorTemp = self.__temperature.read()
