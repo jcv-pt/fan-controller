@@ -211,7 +211,7 @@ The following diagram illustrates GPIO connection on the Raspberry PI per device
        
        [Service]
        WorkingDirectory=/usr/local/bin/raspberry-pi-fan-controller
-       ExecStart=/usr/local/bin/raspberry-pi-fan-controller/fan-controller-venv/bin/python /usr/local/bin/raspberry-pi-fan-controller/fan-controller
+       ExecStart=/usr/local/bin/raspberry-pi-fan-controller/fan-controller-venv/bin/python /usr/local/bin/raspberry-pi-fan-controller/fan-controller --verbose=0 --debug=0
        Restart=always
        
        [Install]
