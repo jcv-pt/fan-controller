@@ -44,7 +44,7 @@ class Buzzer:
 
     def shutdown(self):
         self.stop()
-        GPIO.cleanup()
+        GPIO.cleanup(self.__devicePin)
 
     def __run(self):
         if (self.__type == 'intermittent'):

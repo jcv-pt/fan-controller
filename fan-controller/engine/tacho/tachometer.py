@@ -24,11 +24,7 @@ class Tachometer:
         self.__pulsesPerRev = int(self.__config.get('Fan', 'TachoPulsesPerRev'))
         self.__pulseStack = Stack(15)
 
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.__devicePin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
-        GPIO.add_event_detect(self.__devicePin, GPIO.FALLING, callback=self.__countPulse)
-
+        self.__internalClock = 0
         self.__thread = threading.Thread(target=self.__run)
 
     def start(self):
@@ -47,14 +43,28 @@ class Tachometer:
 
     def shutdown(self):
         self.stop()
-        time.sleep(2)  # Wait for two secs
-        GPIO.cleanup()
+        time.sleep(3)  # Wait for two secs
+        GPIO.cleanup(self.__devicePin)
 
     def __run(self):
         try:
             while self.__isRunning:
+                # GPIO method add_event_detect() is a CPU intensive task, and since we are interested in measure fan idle in a timely manner
+                # we dont need to continuously count RPM. Measure RPM in a 5 min interval is acceptable.
+                if self.__internalClock <= 15:
+                    self.__internalClock += 1
+                    time.sleep(1)
+                    continue
+                # Enable pin reading
+                GPIO.setmode(GPIO.BCM)
+                GPIO.setup(self.__devicePin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+                GPIO.add_event_detect(self.__devicePin, GPIO.FALLING, callback=self.__countPulse)
+                # Read pulses
                 self.__measurePulses()
-                time.sleep(5)
+                # Remove event from pin since its a CPU intensive task
+                GPIO.cleanup(self.__devicePin)
+                # Reset clock and sleep until next iteration
+                self.__internalClock = 0
         except Exception as e:
             self.__logger.error('Tachometer', message='Error while reading FAN pulses: {0}'.format(repr(e)))
 
