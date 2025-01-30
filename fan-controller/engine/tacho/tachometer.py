@@ -36,6 +36,8 @@ class Tachometer:
         return int(self.__pulseStack.getAverage())
 
     def getRepeatedPulses(self):
+        if not self.__pulseStack.isFull():
+            return 0
         return self.__pulseStack.getRepeated()
 
     def stop(self):

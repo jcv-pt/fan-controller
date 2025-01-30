@@ -44,3 +44,10 @@ class Stack:
         counter = Counter(self.__stack)
         # Count how many values occur more than once
         return sum(count > 1 for count in counter.values())
+
+    def isFull(self):
+        """
+        Checks if the stack is full.
+        :return:
+        """
+        return len(self.__stack) == self.__maxSize
