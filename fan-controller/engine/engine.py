@@ -129,7 +129,7 @@ class Engine:
         tachAvgPulses = self.__tachometer.getAvgPulses()
         tachRepPulses = self.__tachometer.getRepeatedPulses()
         faultId = 'rotation_tachometer'
-        if self.__fanShutdownIsStopped is False and tachRepPulses > 0:
+        if self.__fanShutdownIsStopped is False and self.__tachometer.isLikelyStopped():
             # Report
             if self.__failures.exists(faultId) == False:
                 self.__failures.report(faultId)

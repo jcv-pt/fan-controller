@@ -45,9 +45,23 @@ class Stack:
         # Count how many values occur more than once
         return sum(count > 1 for count in counter.values())
 
-    def isFull(self):
+    def getCount(self):
         """
-        Checks if the stack is full.
+        Returns stack count
         :return:
         """
-        return len(self.__stack) == self.__maxSize
+        return len(self.__stack)
+
+    def getRepeatedAsPer(self):
+        """
+        Gets the number of elements in the stack as percentage.
+        :return:
+        """
+        return int((self.getRepeated() * 100) / self.__maxSize)
+
+    def isFull(self):
+        """
+        Gets the number of elements in the stack as percentage.
+        :return:
+        """
+        return self.getCount() == self.__maxSize

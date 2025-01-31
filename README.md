@@ -161,6 +161,10 @@ The following diagram illustrates GPIO connection on the Raspberry PI per device
     - `[Fan][TachoPulsesPerRev]`
       - <u>Desc</u>: *Fan Tacho pulses per revolution*;
       - <u>Default</u>: `2`
+    - `[Fan][TachoMaxRepeatedPulsesAsPer]`
+      - <u>Desc</u>: *Fault will be raised when system detects this much repeated Tacho readings (in percentage)*;
+      - <u>Default</u>: `75`
+    
     - `[Buzzer][GPIOPin]`
       - <u>Desc</u>: *GPIOPin for the buzzer ( using GPIO.BCM )*;
       - <u>Default</u>: `22`

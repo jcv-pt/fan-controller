@@ -22,6 +22,7 @@ class Tachometer:
 
         self.__devicePin = int(self.__config.get('Fan', 'TachoGPIOPin'))
         self.__pulsesPerRev = int(self.__config.get('Fan', 'TachoPulsesPerRev'))
+        self.__maxRepeatedPulses = int(self.__config.get('Fan', 'TachoMaxRepeatedPulsesAsPer'))
         self.__pulseStack = Stack(15)
 
         self.__internalClock = 0
@@ -36,9 +37,14 @@ class Tachometer:
         return int(self.__pulseStack.getAverage())
 
     def getRepeatedPulses(self):
-        if not self.__pulseStack.isFull():
-            return 0
         return self.__pulseStack.getRepeated()
+
+    def isLikelyStopped(self):
+        if not self.__pulseStack.isFull():
+            return False
+        if self.__pulseStack.getRepeatedAsPer() >= self.__maxRepeatedPulses:
+            return True
+        return False
 
     def stop(self):
         self.__isRunning = False
